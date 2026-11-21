@@ -1,0 +1,12 @@
+# Secrets & credentials
+.env
+*.pem
+*.key
+*credentials*
+
+# Local runtime data
+n8n_data/
+
+# OS & editor files
+.DS_Store
+Thumbs.db
