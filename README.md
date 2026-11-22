@@ -1,5 +1,7 @@
 <div align="center">
 
+<img alt="Secure Private n8n RSS Alerts Architecture Diagram" src="./images/n8n_aws_ec2_architecture.jpg" />
+
 # Secure Private n8n RSS Alerts on AWS EC2
 
 ![AWS](https://img.shields.io/badge/AWS-EC2%20%7C%20VPC-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
