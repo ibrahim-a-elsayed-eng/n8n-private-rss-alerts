@@ -1,7 +1,5 @@
 <div align="center">
 
-<img alt="Secure Private n8n RSS Alerts Architecture Diagram" src="./images/n8n_aws_ec2_architecture.jpg" />
-
 # Secure Private n8n RSS Alerts on AWS EC2
 
 ![AWS](https://img.shields.io/badge/AWS-EC2%20%7C%20VPC-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
@@ -16,6 +14,8 @@
 ---
 
 ## 1. Architecture Overview
+
+![Architecture Diagram](./images/n8n_aws_ec2_architecture.jpg)
 
 ```mermaid
 flowchart LR
@@ -87,6 +87,20 @@ ssh -N -L 127.0.0.1:5678:127.0.0.1:5678 -i "<PATH_TO_KEY>.pem" ubuntu@<PUBLIC_IP
 
 ---
 
-## 6. Key Engineering Takeaways
+## 6. Troubleshooting & Fixes
+- **Issue 1 (Low-RAM Container Stability):** Free Tier EC2 instances risk Out-Of-Memory (OOM) crashes during Docker image pulls and `n8n` workflow execution.
+  - **Root Cause & Fix:** Provisioned a persistent `2 GiB` `/swapfile` registered in `/etc/fstab` and verified it with `swapon --show`.
+- **Issue 2 (Public UI Reachability):** Accessing `http://<PUBLIC_IPV4>:5678` directly timed out/refused as intended, and closing the SSH terminal immediately dropped `http://localhost:5678`.
+  - **Root Cause & Fix:** Confirmed loopback binding (`127.0.0.1:5678:5678`) + Security Group `n8n-ssh-only` (`22/TCP` from operator IP) work as a dual boundary; UI access is restored on demand via `ssh -N -L 127.0.0.1:5678:127.0.0.1:5678`.
+
+---
+
+## 7. Cost & Teardown Verification ($0.00)
+- [x] EC2 instance (`n8n-private`), EBS volume, and temporary resources terminated after verification (`compose.yaml` + workflow JSON preserved for redeploy).
+- [x] AWS Billing checked (`$0.00` ongoing spend).
+
+---
+
+## 8. Key Engineering Takeaways
 - **Defense in Depth for Admin UIs:** Combining host-level loopback binding (`127.0.0.1`) with network-level Security Group rules and SSH tunneling keeps internal tools completely invisible to the public internet.
 - **Cost & Stability on Small Instances:** Adding a 2 GiB swap file prevents memory spikes on Free Tier instances, and keeping infrastructure codified in `compose.yaml` + exported workflow JSON allows terminating the EC2 instance (`$0` ongoing cost) and redeploying in minutes.
